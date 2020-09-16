@@ -36,6 +36,10 @@ module Honeycomb
       parse_options(**options)
     end
 
+    def to_trace_header
+      propagator.to_trace_header(id, trace, builder)
+    end
+
     def parse_options(parent: nil,
                       parent_id: nil,
                       is_root: parent_id.nil?,

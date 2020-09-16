@@ -4,8 +4,8 @@ module Honeycomb
   # Parsing and propagation for AWS trace headers
   module AWSPropagation
     # Parse trace headers
-    module UnmarshalTraceContext
-      def parse(serialized_trace)
+    class Propagator
+      def unmarshal_trace_context(serialized_trace)
         unless serialized_trace.nil?
           split = serialized_trace.split(";")
 
@@ -46,21 +46,19 @@ module Honeycomb
     end
 
     # Serialize trace headers
-    module MarshalTraceContext
-      def to_trace_header
-        context = [""]
-        unless trace.fields.keys.nil?
-          trace.fields.keys.each do |key|
-            context.push("#{key}=#{trace.fields[key]}")
-          end
+    def to_trace_header(id, trace)
+      context = [""]
+      unless trace.fields.keys.nil?
+        trace.fields.keys.each do |key|
+          context.push("#{key}=#{trace.fields[key]}")
         end
-
-        data_to_propagate = [
-          "Root=#{trace.id}",
-          "Parent=#{id}",
-        ]
-        "#{data_to_propagate.join(';')}#{context.join(';')}"
       end
+
+      data_to_propagate = [
+        "Root=#{trace.id}",
+        "Parent=#{id}",
+      ]
+      "#{data_to_propagate.join(';')}#{context.join(';')}"
     end
   end
 end

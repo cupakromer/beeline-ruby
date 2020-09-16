@@ -9,11 +9,15 @@ require "honeycomb/propagation/honeycomb"
 module Honeycomb
   # Parse trace headers
   module PropagationParser
-    include HoneycombPropagation::UnmarshalTraceContext
+    def propagator
+      return HoneycombPropagation::Propagator.new
+    end
   end
 
   # Serialize trace headers
   module PropagationSerializer
-    include HoneycombPropagation::MarshalTraceContext
+    def propagator
+      return HoneycombPropagation::Propagator.new
+    end
   end
 end

@@ -4,11 +4,11 @@ module Honeycomb
   # Parsing and propagation for W3C trace headers
   module W3CPropagation
     # Parse trace headers
-    module UnmarshalTraceContext
+    class Propagator
       INVALID_TRACE_ID = "00000000000000000000000000000000".freeze
       INVALID_SPAN_ID = "0000000000000000".freeze
 
-      def parse(serialized_trace)
+      def unmarshal_trace_context(serialized_trace)
         unless serialized_trace.nil?
           version, payload = serialized_trace.split("-", 2)
           # version should be 2 hex characters
@@ -41,15 +41,13 @@ module Honeycomb
     end
 
     # Serialize trace headers
-    module MarshalTraceContext
-      def to_trace_header
-        # do not propagate malformed ids
-        if trace.id =~ /^[A-Fa-f0-9]{32}$/ && id =~ /^[A-Fa-f0-9]{16}$/
-          return "00-#{trace.id}-#{id}-01"
-        end
-
-        nil
+    def to_trace_header(trace, id)
+      # do not propagate malformed ids
+      if trace.id =~ /^[A-Fa-f0-9]{32}$/ && id =~ /^[A-Fa-f0-9]{16}$/
+        return "00-#{trace.id}-#{id}-01"
       end
+
+      nil
     end
   end
 end

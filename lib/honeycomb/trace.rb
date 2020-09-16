@@ -19,7 +19,7 @@ module Honeycomb
 
     def initialize(builder:, context:, serialized_trace: nil, **options)
       trace_id, parent_span_id, trace_fields, dataset =
-        parse serialized_trace
+        propagator.unmarshal_trace_context(serialized_trace)
       dataset && builder.dataset = dataset
       @id = trace_id || generate_trace_id
       @fields = trace_fields || {}

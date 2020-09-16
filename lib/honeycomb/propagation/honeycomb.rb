@@ -8,8 +8,9 @@ module Honeycomb
   # Parsing and propagation for honeycomb trace headers
   module HoneycombPropagation
     # Parse trace headers
-    module UnmarshalTraceContext
-      def parse(serialized_trace)
+    class Propagator
+
+      def unmarshal_trace_context(serialized_trace)
         unless serialized_trace.nil?
           version, payload = serialized_trace.split(";", 2)
 
@@ -49,11 +50,10 @@ module Honeycomb
 
         [trace_id, parent_span_id, trace_fields, dataset]
       end
-    end
 
-    # Serialize trace headers
-    module MarshalTraceContext
-      def to_trace_header
+      # Serialize trace headers
+      # TODO: consider a uniform interface with w3c / aws. Maybe instead of builder, pass a hash
+      def to_trace_header(id, trace, builder)
         context = Base64.urlsafe_encode64(JSON.generate(trace.fields)).strip
         encoded_dataset = URI.encode_www_form_component(builder.dataset)
         data_to_propogate = [
